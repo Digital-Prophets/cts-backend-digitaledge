@@ -18,9 +18,15 @@ Database set up
 ---------------
 ### Using Visual Studio
 * Navigate to "Tools" tab, click on "NugetPacket Manager" option and then open "Package Manager console".
-*	Run **Update-Database** command in the PM console to create database with all tables.
-*	Open MS SQL Managment Studio to view and interact with database.
+* Run **Update-Database** command in the PM console to create database with all tables.
+* Open MS SQL Managment Studio to view and interact with database.
 * If you can see database with tables then migrations were successful
+### SQL Agent Jobs
+1. Under the DigitalEdge.Domain namespace open the SQL Static data and run the following SQL;
+   * **UpdateAppointmentStatusProc.sql** - is used to update appoinment status for all clients
+   * **AppointmentStatusJob.sql** - is used to schedule appointment updates job that runs at midnight everyday
+2. After creating the SQL procedure and job, start the sql job by running the SQL command below
+    * **EXEC msdb.dbo.sp_start_job 'UpdateAppointmentsJob'**
 
 Launch Application
 ------------------
