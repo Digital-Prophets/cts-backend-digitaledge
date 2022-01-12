@@ -22,9 +22,9 @@ Database set up
 * Open MS SQL Managment Studio to view and interact with database.
 * If you can see database with tables then migrations were successful
 ### SQL Agent Jobs
-1. Under the DigitalEdge.Domain namespace open the SQL Static data and run the following SQL;
+1. Under the DigitalEdge.Domain namespace open the SQL Static data directory and run the following SQL;
    * **UpdateAppointmentStatusProc.sql** - is used to update appoinment status for all clients
-   * **AppointmentStatusJob.sql** - is used to schedule appointment updates job that runs at midnight everyday
+   * **AppointmentStatusJob.sql** - is used to schedule appointment updates job that runs at midnight every day using the procedure above
 2. After creating the SQL procedure and job, start the sql job by running the SQL command below
     * **EXEC msdb.dbo.sp_start_job 'UpdateAppointmentsJob'**
 
