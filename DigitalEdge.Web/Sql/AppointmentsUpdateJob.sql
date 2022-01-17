@@ -1,11 +1,20 @@
 USE [msdb]
 GO
 
-/****** Object:  Job [UpdateAppointmentsJob]    Script Date: 12/01/2022 15:49:13 ******/
+/****** Object:  Job [UpdateAppointmentsJob]    Script Date: 17/01/2022 11:02:14 ******/
+DECLARE @jobId binary(16)
+SELECT @jobId = job_id FROM msdb.dbo.sysjobs WHERE (name = N'UpdateAppointmentsJob')
+IF (@jobId IS NOT NULL)
+BEGIN
+    EXEC msdb.dbo.sp_delete_job @jobId
+END
+GO
+
+/****** Object:  Job [UpdateAppointmentsJob]    Script Date: 17/01/2022 11:02:14 ******/
 BEGIN TRANSACTION
 DECLARE @ReturnCode INT
 SELECT @ReturnCode = 0
-/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 12/01/2022 15:49:13 ******/
+/****** Object:  JobCategory [[Uncategorized (Local)]]    Script Date: 17/01/2022 11:02:14 ******/
 IF NOT EXISTS (SELECT name FROM msdb.dbo.syscategories WHERE name=N'[Uncategorized (Local)]' AND category_class=1)
 BEGIN
 EXEC @ReturnCode = msdb.dbo.sp_add_category @class=N'JOB', @type=N'LOCAL', @name=N'[Uncategorized (Local)]'
@@ -25,7 +34,7 @@ EXEC @ReturnCode =  msdb.dbo.sp_add_job @job_name=N'UpdateAppointmentsJob',
 		@category_name=N'[Uncategorized (Local)]', 
 		@owner_login_name=N'sa', @job_id = @jobId OUTPUT
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
-/****** Object:  Step [Run proc]    Script Date: 12/01/2022 15:49:13 ******/
+/****** Object:  Step [Run proc]    Script Date: 17/01/2022 11:02:15 ******/
 EXEC @ReturnCode = msdb.dbo.sp_add_jobstep @job_id=@jobId, @step_name=N'Run proc', 
 		@step_id=1, 
 		@cmdexec_success_code=0, 

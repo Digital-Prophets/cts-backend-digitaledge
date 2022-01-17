@@ -1,4 +1,11 @@
-CREATE OR ALTER PROCEDURE [dbo].[UpdateAppointmentStatus] 
+USE [CTSMigrationDB]
+GO
+/****** Object:  StoredProcedure [dbo].[UpdateAppointmentStatus]    Script Date: 13/01/2022 12:34:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE OR ALTER   PROCEDURE [dbo].[UpdateAppointmentStatus] 
 AS 
 BEGIN
 	DECLARE @Today AS datetime2 = getdate()
@@ -14,25 +21,26 @@ BEGIN
 	UPDATE app
 		SET app.DaysLate = (SELECT datediff(day, app.appointmentdate, @Today))
 	FROM [dbo].[Appointments] app
-	WHERE app.AppointmentStatus = -1
+	WHERE app.AppointmentStatus = -1;
 	
-	-- CASE 2: attended appointments
+	-- CASE 2: attended appointments that are still pending
 	UPDATE app 
 		SET app.appointmentstatus = 1,
 			app.dateedited = @Today 
 	FROM [dbo].[Appointments] app 
 	WHERE app.interactiondate IS NOT NULL 
-	AND app.appointmentstatus = 0 
-	AND app.interactiondate > app.appointmentdate;
-	
-	-- CASE 3: pending appointments
+	AND app.appointmentstatus = 0
+	AND app.InteractionDate < @Today;
+
+	-- CASE 3: attended appointment that are still missed
 	UPDATE app 
-		SET app.appointmentstatus = 0, 
-		app.dateedited = @Today 
+		SET app.appointmentstatus = 1,
+			app.dateedited = @Today 
 	FROM [dbo].[Appointments] app 
-	WHERE app.interactiondate IS NULL AND app.appointmentdate > @Today;
+	WHERE app.interactiondate IS NOT NULL 
+	AND app.appointmentstatus = -1
+	AND app.InteractionDate < @Today;
+	
 
 END 
 -- run procedure
-GO
-EXECUTE [dbo].[UpdateAppointmentStatus];
