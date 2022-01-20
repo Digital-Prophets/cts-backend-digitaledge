@@ -10,12 +10,12 @@ namespace DigitalEdge.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
         private readonly IVisitService _visitService;
         private readonly IConfiguration _config;
+
         public AccountController(IAccountService accountService, IConfiguration config, IVisitService visitService)
         {
             this._accountService = accountService;
@@ -29,12 +29,12 @@ namespace DigitalEdge.Web.Controllers
         public ActionResult Login([FromBody] UserModel model)
         {
             if (model == null)
-                return BadRequest(new ServiceResponse() { StatusCode = 400 });
+                return BadRequest(new ServiceResponse() {StatusCode = 400});
             var user = _accountService.ValidateUser(model.Email, model.Password);
             if (user == null)
-                return NotFound(new ServiceResponse() { StatusCode = 404, Message = "User not found" });
+                return NotFound(new ServiceResponse() {StatusCode = 404, Message = "User not found"});
             var token = _accountService.GetToken(user);
-            return Ok(new { user, token });
+            return Ok(new {user, token});
         }
 
         [HttpPost]
@@ -44,22 +44,41 @@ namespace DigitalEdge.Web.Controllers
         {
             if (model == null)
             {
-                return Ok(new ServiceResponse() { StatusCode = 400 });
+                return Ok(new ServiceResponse() {StatusCode = 400});
             }
+
             var user = _accountService.ValidateClient(model);
             if (user.ArtNo != model.ArtNo)
             {
-                return NotFound(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Client not found, enroll client before creating appointment!" });
-
+                return NotFound(new ServiceResponse()
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Client not found, enroll client before creating appointment!"
+                });
             }
             else
             {
+                var appointment = _visitService.GetClientAppointment(model.ClientId);
+                if (appointment.AppointmentStatus == model.AppointmentStatus &&
+                    appointment.AppointmentDate == model.AppointmentDate &&
+                    appointment.ServiceTypeId == model.ServiceTypeId)
+                {
+                }
+                else
+                {
+                    return BadRequest(new ServiceResponse()
+                        {Success = false, StatusCode = 400, Message = "Appointment for this service and date already"});
+                }
+
                 model.ClientId = (user.ClientId);
                 string result = this._accountService.AddAppointment(model);
                 if (result == "null")
-                    return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Appointment model empty" });
+                    return BadRequest(new ServiceResponse()
+                        {Success = false, StatusCode = 400, Message = "Appointment model empty"});
                 else
-                    return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "Client appointment successfully created!" });
+                    return Ok(new ServiceResponse()
+                        {Success = true, StatusCode = 200, Message = "Client appointment successfully created!"});
             }
         }
 
@@ -70,7 +89,7 @@ namespace DigitalEdge.Web.Controllers
         {
             if (model == null)
             {
-                return BadRequest(new ServiceResponse() { StatusCode = 400, Message = "Enter valid client details!" });
+                return BadRequest(new ServiceResponse() {StatusCode = 400, Message = "Enter valid client details!"});
             }
 
             else
@@ -78,10 +97,12 @@ namespace DigitalEdge.Web.Controllers
                 var result = this._accountService.AddClient(model);
                 if (result != null)
                 {
-                    return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "Client created successfully!" });
-
+                    return Ok(new ServiceResponse()
+                        {Success = true, StatusCode = 200, Message = "Client created successfully!"});
                 }
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Error: Client not saved" });
+
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Error: Client not saved"});
             }
         }
 
@@ -93,11 +114,13 @@ namespace DigitalEdge.Web.Controllers
         {
             if (model == null)
             {
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Error: Could not update appointment!" });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Error: Could not update appointment!"});
             }
-            this._accountService.UpdateAppointment(model);
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "Appointment update successfull!" });
 
+            this._accountService.UpdateAppointment(model);
+            return Ok(new ServiceResponse()
+                {Success = true, StatusCode = 200, Message = "Appointment update successfull!"});
         }
 
         [HttpPost]
@@ -107,13 +130,14 @@ namespace DigitalEdge.Web.Controllers
         {
             if (model == null)
             {
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Edit client failed!" });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Edit client failed!"});
             }
+
             this._accountService.UpdateClient(model);
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "Client details successfully updated!" });
+            return Ok(new ServiceResponse()
+                {Success = true, StatusCode = 200, Message = "Client details successfully updated!"});
         }
-
-
 
 
         [HttpGet]
@@ -124,7 +148,7 @@ namespace DigitalEdge.Web.Controllers
             var user = _accountService.GetData();
             return Ok(user);
         }
-        
+
         [HttpGet]
         [Route("GetUsersByFacility/{facilityId}")]
         [Authorize]
@@ -151,7 +175,7 @@ namespace DigitalEdge.Web.Controllers
             var user = _accountService.GetAppointment(id);
             return Ok(user);
         }
-       
+
 
         [HttpPost]
         [Route("Create")]
@@ -160,10 +184,12 @@ namespace DigitalEdge.Web.Controllers
         {
             if (user == null)
             {
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Error: Failed to add a user! " });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Error: Failed to add a user! "});
             }
+
             this._accountService.AddUser(user);
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "User successfully created" });
+            return Ok(new ServiceResponse() {Success = true, StatusCode = 200, Message = "User successfully created"});
         }
 
         [HttpPost]
@@ -173,10 +199,13 @@ namespace DigitalEdge.Web.Controllers
         {
             if (addVLresult == null)
             {
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Error: Failed to add viral load result" });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Error: Failed to add viral load result"});
             }
+
             this._accountService.AddViralLoad(addVLresult);
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "Viral Load result successfully added" });
+            return Ok(new ServiceResponse()
+                {Success = true, StatusCode = 200, Message = "Viral Load result successfully added"});
         }
 
         [HttpPut]
@@ -186,10 +215,13 @@ namespace DigitalEdge.Web.Controllers
         {
             if (updateuser == null)
             {
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Error: Failed to update a user details! " });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Error: Failed to update a user details! "});
             }
+
             this._accountService.UpdateUser(updateuser);
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "User details successfully updated!" });
+            return Ok(new ServiceResponse()
+                {Success = true, StatusCode = 200, Message = "User details successfully updated!"});
         }
 
         [HttpPost]
@@ -198,7 +230,7 @@ namespace DigitalEdge.Web.Controllers
         public ActionResult Delete([FromBody] UserModel deleteuser)
         {
             this._accountService.UpdateUser(deleteuser);
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "User successfully deleted" });
+            return Ok(new ServiceResponse() {Success = true, StatusCode = 200, Message = "User successfully deleted"});
         }
 
         [HttpGet]
@@ -217,11 +249,13 @@ namespace DigitalEdge.Web.Controllers
         {
             string resultdata = this._accountService.CreateFacility(userFacility);
             if (resultdata == "null")
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Error: Failed to create facility" });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Error: Failed to create facility"});
             else
-                return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "Facility successfully created!" });
-
+                return Ok(new ServiceResponse()
+                    {Success = true, StatusCode = 200, Message = "Facility successfully created!"});
         }
+
         [HttpPost]
         [Route("ServicePointCreate")]
         [Authorize]
@@ -229,11 +263,12 @@ namespace DigitalEdge.Web.Controllers
         {
             string resultdata = this._accountService.AddServicePoint(servicePoint);
             if (resultdata == "null")
-                return BadRequest(new ServiceResponse() { Success = false, Message = "Failed to create service point", StatusCode = 500 });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, Message = "Failed to create service point", StatusCode = 500});
             else
-                return Ok(new ServiceResponse() { Success = true, StatusCode = 200 });
-
+                return Ok(new ServiceResponse() {Success = true, StatusCode = 200});
         }
+
         [HttpGet]
         [Route("GetFacilityData")]
         [Authorize]
@@ -251,6 +286,7 @@ namespace DigitalEdge.Web.Controllers
             var user = _accountService.getFacilityUserData();
             return Ok(user);
         }
+
         [HttpGet]
         [Route("GetServiceData")]
         [Authorize]
@@ -259,6 +295,7 @@ namespace DigitalEdge.Web.Controllers
             var user = _accountService.getServiceData();
             return Ok(user);
         }
+
         [HttpPost]
         [Route("DeleteFacility")]
         [Authorize]
@@ -266,8 +303,9 @@ namespace DigitalEdge.Web.Controllers
         {
             this._accountService.UpdateFacilityUser(deleteuser);
 
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200 });
+            return Ok(new ServiceResponse() {Success = true, StatusCode = 200});
         }
+
         [HttpPost]
         [Route("ServicePointUpdate")]
         [Authorize]
@@ -275,7 +313,7 @@ namespace DigitalEdge.Web.Controllers
         {
             this._accountService.UpdateServicePoint(updateservice);
 
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200 });
+            return Ok(new ServiceResponse() {Success = true, StatusCode = 200});
         }
 
         [HttpPost]
@@ -283,13 +321,15 @@ namespace DigitalEdge.Web.Controllers
         [Authorize]
         public ActionResult UpdatefacilityUser([FromBody] FacilityModel facilityModel)
         {
-
             if (facilityModel == null)
             {
-                return BadRequest(new ServiceResponse() { Success = false, StatusCode = 400, Message = "Error: Update operation failed" });
+                return BadRequest(new ServiceResponse()
+                    {Success = false, StatusCode = 400, Message = "Error: Update operation failed"});
             }
+
             this._accountService.UpdateFacility(facilityModel);
-            return Ok(new ServiceResponse() { Success = true, StatusCode = 200, Message = "Facility details updated successfully!" });
+            return Ok(new ServiceResponse()
+                {Success = true, StatusCode = 200, Message = "Facility details updated successfully!"});
         }
 
         [HttpGet]
@@ -299,7 +339,7 @@ namespace DigitalEdge.Web.Controllers
         {
             return _accountService.CountUsers();
         }
-        
+
         [HttpGet]
         [Route("CountUsersInFacility")]
         [Authorize]
@@ -315,8 +355,5 @@ namespace DigitalEdge.Web.Controllers
         {
             return _accountService.ActiveUsers();
         }
-
-
-
     }
 }
