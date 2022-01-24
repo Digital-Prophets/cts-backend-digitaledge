@@ -59,17 +59,22 @@ namespace DigitalEdge.Web.Controllers
             }
             else
             {
-                var appointment = _visitService.GetClientAppointment(model.ClientId);
-                if (appointment.AppointmentStatus == model.AppointmentStatus &&
-                    appointment.AppointmentDate == model.AppointmentDate &&
-                    appointment.ServiceTypeId == model.ServiceTypeId)
+                var appointments = _visitService.getClientDetails();
+                foreach (var appointment in appointments)
                 {
+                    var clientId = appointment.ClientId;
+                    if (clientId == model.ClientId)
+                    {
+                        if (appointment.AppointmentStatus == model.AppointmentStatus &&
+                            appointment.AppointmentDate.ToString() == model.AppointmentDate &&
+                            appointment.ServiceTypeId == model.ServiceTypeId)
+                        {
+                            return BadRequest(new ServiceResponse()
+                                { Success = false, StatusCode = 400, Message = "Appointment for this service and date already exists." });
+                        }
+                    }
                 }
-                else
-                {
-                    return BadRequest(new ServiceResponse()
-                        {Success = false, StatusCode = 400, Message = "Appointment for this service and date already"});
-                }
+
 
                 model.ClientId = (user.ClientId);
                 string result = this._accountService.AddAppointment(model);
