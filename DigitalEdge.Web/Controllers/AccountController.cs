@@ -86,6 +86,7 @@ namespace DigitalEdge.Web.Controllers
                     return Ok(new ServiceResponse()
                     { Success = true, StatusCode = 200, Message = "Client appointment successfully created!" });
             }
+
         }
 
         [HttpPost]

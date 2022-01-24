@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 DigitalEdge.Web/appsettings.json
+DigitalEdge.Domain/DigitalEdge.Domain.csproj
