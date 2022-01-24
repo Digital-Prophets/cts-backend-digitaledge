@@ -5,6 +5,7 @@ using DigitalEdge.Services;
 using DigitalEdge.Domain;
 using Microsoft.AspNetCore.Authorization;
 using DigitalEdge.Utility;
+using System.Globalization;
 
 namespace DigitalEdge.Web.Controllers
 {
@@ -60,30 +61,30 @@ namespace DigitalEdge.Web.Controllers
             else
             {
                 var appointments = _visitService.getClientDetails();
+                var dtFormat = string.Format("{0} {1}", model.AppointmentDate, model.AppointmentTime);
+                DateTime appDate = DateTime.Parse(dtFormat);
                 foreach (var appointment in appointments)
                 {
-                    var clientId = appointment.ClientId;
-                    if (clientId == model.ClientId)
+                    // for threading sake, only appointments occuring on this day will be checked first
+                    if (appDate == appointment.AppointmentDate)
                     {
-                        if (appointment.AppointmentStatus == model.AppointmentStatus &&
-                            appointment.AppointmentDate.ToString() == model.AppointmentDate &&
-                            appointment.ServiceTypeId == model.ServiceTypeId)
+                        // then check service type & status
+                        if(appointment.ServiceTypeId == model.ServiceTypeId && appointment.AppointmentStatus == model.AppointmentStatus)
                         {
                             return BadRequest(new ServiceResponse()
-                                { Success = false, StatusCode = 400, Message = "Appointment for this service and date already exists." });
+                            { Success = false, StatusCode = 400, Message = "Appointment for this service and date already exists." });
                         }
                     }
                 }
-
-
+                // safe to create new appointment 
                 model.ClientId = (user.ClientId);
                 string result = this._accountService.AddAppointment(model);
                 if (result == "null")
                     return BadRequest(new ServiceResponse()
-                        {Success = false, StatusCode = 400, Message = "Appointment model empty"});
+                    { Success = false, StatusCode = 400, Message = "Appointment model empty" });
                 else
                     return Ok(new ServiceResponse()
-                        {Success = true, StatusCode = 200, Message = "Client appointment successfully created!"});
+                    { Success = true, StatusCode = 200, Message = "Client appointment successfully created!" });
             }
         }
 
