@@ -137,7 +137,7 @@ namespace DigitalEdge.Repository
             this._loginRepository.Update(users);
         }
 
-        public void UpdateAppointment(Appointment users)
+        public void AddAttendanceService(Appointment users)
         {
             this._appointmentRepository.Update(users);
         }
@@ -258,9 +258,18 @@ namespace DigitalEdge.Repository
 
         public string AddVLResult(ViralLoad result)
         {
-            if (_DigitalEdgeContext.ViralLoadResults.Any(o => o.ViralLoadId.Equals(result.ViralLoadId))) return "null";
+            if (_DigitalEdgeContext.ViralLoadResults.Any(vl => vl.ClientId.Equals(result.ClientId) && vl.InitialViralLoadCount.Equals(result.InitialViralLoadCount) && vl.CurrentViralLoadCount.Equals(result.CurrentViralLoadCount) && vl.NextVLDueDate.Equals(result.NextVLDueDate))) return "null";
+
 
             this._viralLoadRepository.Insert(result);
+            return "ok";
+        }
+
+        public string EditVLResult(ViralLoad viralLoad)
+        {
+            if (_DigitalEdgeContext.ViralLoadResults.Any(vl => vl.ClientId.Equals(viralLoad.ClientId) && vl.InitialViralLoadCount.Equals(viralLoad.InitialViralLoadCount) && vl.CurrentViralLoadCount.Equals(viralLoad.CurrentViralLoadCount) && vl.NextVLDueDate.Equals(viralLoad.NextVLDueDate))) return "null";
+
+            this._viralLoadRepository.Update(viralLoad);
             return "ok";
         }
 
@@ -293,6 +302,12 @@ namespace DigitalEdge.Repository
                                      }).ToList();
             return users;
         }
+
+        public void EditAppointmentService(Appointment appointment)
+        {
+            this._appointmentRepository.Update(appointment);
+        }
+
     }
 }
 
