@@ -76,21 +76,7 @@ namespace DigitalEdge.Domain
 
         public string Comment { get; set; }
 
-        #endregion
-
-
-        #region Viral Load Properties
-
-        public long ViralLoadId { get; set; }
-
-        public int? InitialViralLoadCount { get; set; }
-
-        public int? CurrentViralLoadCount { get; set; }
-
-        public DateTime? NextVLDueDate { get; set; }
-
-        #endregion
-
+        #endregion            
 
         #region Method Extras
 

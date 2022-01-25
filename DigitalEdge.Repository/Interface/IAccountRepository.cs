@@ -24,7 +24,7 @@ namespace DigitalEdge.Repository
         string CreateFacility(Facility addfacility);
         string servicecreateuser(ServicePoint addfacilityuser);
         void updateUser(Users adduser);
-        void AddAttendanceService(Appointment adduser);
+        void UpdateAppointment(Appointment adduser);
         void UpdateClient(Client addclient);
         List<UserRoles> GetRoles();
         string GetRoleName(long RoleId);
@@ -38,7 +38,5 @@ namespace DigitalEdge.Repository
         string AddVLResult(ViralLoad result);
         int CountUsersInFacility(long facilityId);
         List<UserModel> GetUsersByFacility(long facilityId);
-        void EditAppointmentService(Appointment updateuser);
-        string EditVLResult(ViralLoad viralLoad);
     }
 }

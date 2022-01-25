@@ -431,7 +431,7 @@ namespace DigitalEdge.Repository
                                                        Age = clients.Age,
                                                        Zone = clients.Zone,
                                                        Village = clients.Village,
-                                                       HouseNo = clients.HouseNo, 
+                                                       HouseNo = clients.HouseNo,
                                                        GISLocation = clients.GISLocation,
                                                        GeneralComment = clients.GeneralComment,
                                                        EnrolledByName = clients.EnrolledByName,
@@ -441,7 +441,6 @@ namespace DigitalEdge.Repository
                                                        EnrollmentDate = clients.EnrollmentDate,
                                                        EnrolledByPhone = clients.EnrolledByPhone,
                                                        FacilityId = clients.FacilityId,
-                                                       Facility = facility.FacilityName,
                                                        ClientTypeId = clients.ClientTypeId,
                                                        ServicePointId = clients.ServicePointId,
                                                        LanguageId = clients.LanguageId,
@@ -456,14 +455,10 @@ namespace DigitalEdge.Repository
                                                        ClientStatus = status.ClientStatusName,
                                                        ClientType = clients.ClientTypes.ClientTypeName,
                                                        StatusComment = clients.StatusComments.StatusCommentName,
-                                                       Sex = sex.SexName,                                                       
-                                                       DateCreated = clients.DateCreated,
-                                                       DateEdit = clients.DateEdit,
-                                                       CreatedBy = clients.CreatedBy,
-                                                       EditBy = clients.EditBy
-                                                   }
+                                                       Sex = sex.SexName,
+                                                       Facility = facility.FacilityName                                                   }
 
-                ).OrderByDescending(c => c.DateCreated).ToList();
+                ).OrderByDescending(c => c.EnrollmentDate >= DateTime.Now).ToList();
 
             return clientsInFacility;
 
@@ -1893,7 +1888,7 @@ namespace DigitalEdge.Repository
                                                         CreatedBy = appointment.CreatedBy,
                                                         EditedBy = appointment.EditedBy
                                                     }
-                                                    ).OrderBy(c => c.AppointmentDate == DateTime.Now).ThenByDescending(c => c.DateCreated).ToList();
+                                                    ).OrderByDescending(c => c.AppointmentDate >= DateTime.Now).ToList();
             return appointments;
         }
 
@@ -2081,54 +2076,6 @@ namespace DigitalEdge.Repository
 
 
             return query.ToList();
-        }
-
-        public ViralLoadModel GetClientVlResultDetails(long id)
-        {
-            var query = (from viralload in _DigitalEdgeContext.ViralLoadResults
-                         join client in _DigitalEdgeContext.Clients on viralload.ClientId equals client.ClientId into ClientViralLoad
-                         from clientVl in ClientViralLoad.DefaultIfEmpty()
-                         where (viralload.ViralLoadId == id)
-                         select new ViralLoadModel
-                         {
-
-                             ViralLoadId = viralload.ViralLoadId,
-                             ClientId = clientVl.ClientId,
-                             FirstName = clientVl.FirstName,
-                             LastName = clientVl.LastName,
-                             ArtNo = clientVl.ArtNo,
-                             InitialViralLoadCount = viralload.InitialViralLoadCount,
-                             CurrentViralLoadCount = viralload.CurrentViralLoadCount,
-                             NextVLDueDate = viralload.NextVLDueDate
-
-                         }).SingleOrDefault();
-
-
-            return query;
-        }
-
-        public List<ViralLoadModel> GetClientVLList(long id)
-        {
-            List<ViralLoadModel> query = (from viralload in _DigitalEdgeContext.ViralLoadResults
-                                          join client in _DigitalEdgeContext.Clients on viralload.ClientId equals client.ClientId into ClientViralLoad
-                                          from clientVl in ClientViralLoad.DefaultIfEmpty()
-                                          where (viralload.ClientId == id)
-                                          select new ViralLoadModel
-                                          {
-
-                                              ViralLoadId = viralload.ViralLoadId,
-                                              ClientId = clientVl.ClientId,
-                                              FirstName = clientVl.FirstName,
-                                              LastName = clientVl.LastName,
-                                              ArtNo = clientVl.ArtNo,
-                                              InitialViralLoadCount = viralload.InitialViralLoadCount,
-                                              CurrentViralLoadCount = viralload.CurrentViralLoadCount,
-                                              NextVLDueDate = viralload.NextVLDueDate,
-                                              DateCreated = viralload.DateCreated
-
-                                          }).OrderByDescending(vl => vl.DateCreated).ToList();
-
-            return query;
         }
     }
 }
