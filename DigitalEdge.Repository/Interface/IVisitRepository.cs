@@ -24,6 +24,7 @@ namespace DigitalEdge.Repository
         List<AppointmentsModel> GetAppointments();
         List<AppointmentsModel> GetClientDetailsFilters(VisitsModel filterdata);
         List<AppointmentsModel> GetActiveClientFilter(VisitsModel filterdata);
+        List<AppointmentsModel> GetAppointmentsByClientId(RegistrationModel filterdata);
         List<AppointmentsModel> GetClientVisitPastDetails();
         List<AppointmentsModel> ViewDetails(long id);
         List<SMSRecords> SmsRecords(long id);

@@ -163,7 +163,7 @@ namespace DigitalEdge.Repository
                                                                 from visits in appointments.DefaultIfEmpty()
                                                                 join client in _DigitalEdgeContext.Clients on appointment.ClientId equals client.ClientId into list
                                                                 from clients in list.DefaultIfEmpty()
-                                                                where appointment.ServiceTypeId == missedfilter.ServiceTypeId && appointment.AppointmentDate < DateTime.UtcNow
+                                                                where appointment.ServiceTypeId == missedfilter.ClientId && appointment.AppointmentDate < DateTime.UtcNow
                                                                 select new AppointmentsModel
                                                                 {
                                                                     Id = appointment.AppointmentId,
@@ -181,6 +181,27 @@ namespace DigitalEdge.Repository
                                                                     //FacilityId = visits.FacilityId,
                                                                     ServicePointId = visits.ServicePointId,
                                                                     ServiceTypeId = visits.ServiceTypeId
+                                                                }).ToList();
+
+            return appointmentsmissedfilter;
+        }
+        public List<AppointmentsModel> GetAppointmentsByClientId(RegistrationModel missedfilter)
+        {
+
+            List<AppointmentsModel> appointmentsmissedfilter = (from appointment in _DigitalEdgeContext.Appointments
+                                                                join visit in _DigitalEdgeContext.Visits on appointment.AppointmentId equals visit.AppointmentId into appointments
+                                                                from visits in appointments.DefaultIfEmpty()
+                                                                join client in _DigitalEdgeContext.Clients on appointment.ClientId equals client.ClientId into list
+                                                                from clients in list.DefaultIfEmpty()
+                                                                where appointment.ClientId == missedfilter.ClientId
+                                                                select new AppointmentsModel
+                                                                {
+                                                                    Id = appointment.AppointmentId,
+                                                                    ClientId = clients.ClientId,
+                                                                    AppointmentDate = appointment.AppointmentDate,
+                                                                    AppointmentTime = appointment.AppointmentDate,
+                                                                    ServiceTypeId = appointment.ServiceTypeId,
+                                                                    AppointmentStatus = appointment.AppointmentStatus
                                                                 }).ToList();
 
             return appointmentsmissedfilter;
