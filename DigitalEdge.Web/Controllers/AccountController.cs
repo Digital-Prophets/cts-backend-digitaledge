@@ -43,9 +43,10 @@ namespace DigitalEdge.Web.Controllers
         [Authorize]
         public ActionResult CreateAppointment([FromBody] RegistrationModel model)
         {
+            var newAppoinmentResponse = Ok(new ServiceResponse() { StatusCode = 400 });
             if (model == null)
             {
-                return Ok(new ServiceResponse() {StatusCode = 400});
+                return newAppoinmentResponse;
             }
 
             var user = _accountService.ValidateClient(model);
@@ -60,7 +61,7 @@ namespace DigitalEdge.Web.Controllers
             }
             else
             {
-                var appointments = _visitService.getClientDetails();
+                var appointments = _visitService.getAppointmentsDetailsByClientId(model);
                 var dtFormat = string.Format("{0} {1}", model.AppointmentDate, model.AppointmentTime);
                 DateTime appDate = DateTime.Parse(dtFormat);
                 foreach (var appointment in appointments)
@@ -72,19 +73,26 @@ namespace DigitalEdge.Web.Controllers
                         if(appointment.ServiceTypeId == model.ServiceTypeId && appointment.AppointmentStatus == model.AppointmentStatus)
                         {
                             return BadRequest(new ServiceResponse()
-                            { Success = false, StatusCode = 400, Message = "Appointment for this service and date already exists." });
+                            { 
+                                Success = false, 
+                                StatusCode = 400, 
+                                Message = "Appointment for this service and date already exists." });
+                        }
+                        else
+                        {
+                            // safe to create new appointment 
+                            model.ClientId = (user.ClientId);
+                            string result = this._accountService.AddAppointment(model);
+                            if (result == "null")
+                                return BadRequest(new ServiceResponse()
+                                { Success = false, StatusCode = 400, Message = "Appointment model empty" });
+                            else
+                                return Ok(new ServiceResponse()
+                                { Success = true, StatusCode = 200, Message = "Client appointment successfully created!" });
                         }
                     }
                 }
-                // safe to create new appointment 
-                model.ClientId = (user.ClientId);
-                string result = this._accountService.AddAppointment(model);
-                if (result == "null")
-                    return BadRequest(new ServiceResponse()
-                    { Success = false, StatusCode = 400, Message = "Appointment model empty" });
-                else
-                    return Ok(new ServiceResponse()
-                    { Success = true, StatusCode = 200, Message = "Client appointment successfully created!" });
+                return newAppoinmentResponse;
             }
 
         }
