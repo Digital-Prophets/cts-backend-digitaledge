@@ -1895,7 +1895,7 @@ namespace DigitalEdge.Repository
                                                         CreatedBy = appointment.CreatedBy,
                                                         EditedBy = appointment.EditedBy
                                                     }
-                                                    ).OrderBy(c => c.AppointmentDate == DateTime.Now).ThenByDescending(c => c.DateCreated).ToList();
+                                                    ).OrderByDescending(c => c.DateCreated).ThenByDescending(c => c.DateEdited).ToList();
             return appointments;
         }
 

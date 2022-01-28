@@ -74,6 +74,7 @@
         public ActionResult CreateAppointment([FromBody] RegistrationModel model)
         {
             var newAppoinmentResponse = Ok(new ServiceResponse() { StatusCode = 400 });
+            var appointmentIsValid = true;
             if (model == null)
             {
                 return newAppoinmentResponse;
@@ -99,28 +100,35 @@
                     // for threading sake, only appointments occuring on this day will be checked first
                     if (appDate == appointment.AppointmentDate)
                     {
-                        return BadRequest(new ServiceResponse()
+                        
+                        if(model.AppointmentStatus == appointment.AppointmentStatus && model.ServiceTypeId == appointment.ServiceTypeId)
                         {
-                            Success = false,
-                            StatusCode = 400,
-                            Message = "Appointment for this service and date already exists."
-                        });
-                    }
-                    else
-                    {
-                        // safe to create new appointment 
-                        model.ClientId = (user.ClientId);
-                        string result = this._accountService.AddAppointment(model);
-                        if (result == "null")
-                            return BadRequest(new ServiceResponse()
-                            { Success = false, StatusCode = 400, Message = "Appointment model empty" });
-                        else
-                            return Ok(new ServiceResponse()
-                            { Success = true, StatusCode = 200, Message = "Client appointment successfully created!" });
+                            appointmentIsValid = false;
+                        }
                     }
                 }
             }
-            return newAppoinmentResponse;
+            if (appointmentIsValid == true)
+            {
+                // safe to create new appointment 
+                model.ClientId = (user.ClientId);
+                string result = this._accountService.AddAppointment(model);
+                if (result == "null")
+                    return BadRequest(new ServiceResponse()
+                    { Success = false, StatusCode = 400, Message = "Appointment model empty" });
+                else
+                    return Ok(new ServiceResponse()
+                    { Success = true, StatusCode = 200, Message = "Client appointment successfully created!" });
+            }
+            else
+            {
+                return BadRequest(new ServiceResponse()
+                {
+                    Success = false,
+                    StatusCode = 401,
+                    Message = "Appointment for this service and date already exists."
+                });
+            }
         }
 
 
