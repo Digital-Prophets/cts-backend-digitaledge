@@ -250,7 +250,14 @@ namespace DigitalEdge.Services
         }
         public string EditViralLoad(ViralLoadModel editVLresult)
         {
-            ViralLoad viralLoad = new ViralLoad(editVLresult.ViralLoadId, editVLresult.ClientId, Int32.Parse(editVLresult.InitialViralLoadCount), Int32.Parse(editVLresult.CurrentViralLoadCount), DateTime.Parse( editVLresult.NextVLDueDate), editVLresult.DateCreated);
+            
+            int? initialVlCount = null;
+            if(editVLresult.InitialViralLoadCount.Length > 0 )
+            {
+                initialVlCount = int.Parse(editVLresult.InitialViralLoadCount);
+            }
+
+            ViralLoad viralLoad = new ViralLoad(editVLresult.ViralLoadId, editVLresult.ClientId, initialVlCount, Int32.Parse(editVLresult.CurrentViralLoadCount), DateTime.Parse( editVLresult.NextVLDueDate), editVLresult.DateCreated);
 
            string result = _accountRepository.EditVLResult(viralLoad);
 
