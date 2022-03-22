@@ -227,7 +227,7 @@ namespace DigitalEdge.Services
         public List<ClientModel> getClient()
         {
             throw new NotImplementedException();
-        }
+        } 
 
         public int CountUsers()
         {
@@ -241,9 +241,21 @@ namespace DigitalEdge.Services
 
         public string AddViralLoad(ViralLoadModel viralLoad)
         {
-            ViralLoad result = new ViralLoad(viralLoad.ViralLoadId, viralLoad.ClientId, Int32.Parse(viralLoad.InitialViralLoadCount), Int32.Parse(viralLoad.CurrentViralLoadCount), DateTime.Parse(viralLoad.NextVLDueDate), viralLoad.DateCreated = DateTime.Now);
 
-            string vlResult = _accountRepository.AddVLResult(result);
+            var result = new ViralLoad();
+            long clientId = viralLoad.ClientId;
+            if(clientId > 0)
+            {
+                result = new ViralLoad(viralLoad.ViralLoadId, clientId, Int32.Parse(viralLoad.InitialViralLoadCount), Int32.Parse(viralLoad.CurrentViralLoadCount), DateTime.Parse(viralLoad.NextVLDueDate), viralLoad.DateCreated = DateTime.Now);
+            }
+            else
+            {
+                clientId = _accountRepository.GetClientByArtNumber(viralLoad.ArtNo).ClientId;
+                result = new ViralLoad(viralLoad.ViralLoadId, clientId, Int32.Parse(viralLoad.InitialViralLoadCount), Int32.Parse(viralLoad.CurrentViralLoadCount), DateTime.Parse(viralLoad.NextVLDueDate), viralLoad.DateCreated = DateTime.Now);
+            }
+            
+
+            var vlResult = _accountRepository.AddVLResult(result);
 
             return vlResult;
 
