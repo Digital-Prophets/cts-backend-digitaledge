@@ -10,6 +10,7 @@ namespace DigitalEdge.Repository
         Users GetData(long id);
         Users GetLogin(string email, string password);
         Client GetClient(RegistrationModel data);
+        Client GetClientByArtNumber(string artNumber);
         Appointment GetAppointment(long id);
         void Delete(Users deleteuser);
         void updateUserFacility(UserFacility deletebuilsinguser);

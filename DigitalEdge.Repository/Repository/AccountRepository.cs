@@ -90,6 +90,13 @@ namespace DigitalEdge.Repository
                 return null;
             return user;
         }
+        public Client GetClientByArtNumber(string artNumber)
+        {
+            var user = _clientRepository.Get().Where(client => client.ArtNo == artNumber).SingleOrDefault();
+            if (user == null)
+                return null;
+            return user;
+        }
         public Appointment GetAppointment(long id)
         {
             var appointment = _DigitalEdgeContext.Appointments.Find(id);
