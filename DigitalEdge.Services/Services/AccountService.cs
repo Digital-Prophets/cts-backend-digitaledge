@@ -205,8 +205,34 @@ namespace DigitalEdge.Services
 
         public string AddAppointment(RegistrationModel addappointment)
         {
-            Appointment appointmentData = new Appointment(addappointment.AppointmentId, addappointment.ClientId, addappointment.FacilityId, addappointment.ServiceTypeId,
-                addappointment.GetAppointmentDateAndTime(), addappointment.AppointmentStatus, addappointment.Comment, addappointment.GetDateToday(), addappointment.CreatedBy);
+            Appointment appointmentData = new Appointment();
+            if (addappointment.InteractionDate.IsNullOrEmpty())
+            {
+                var appointmentDate = addappointment.GetAppointmentDateAndTime();
+                appointmentData = new Appointment(addappointment.AppointmentId, addappointment.ClientId, addappointment.FacilityId, addappointment.ServiceTypeId,
+                   appointmentDate, addappointment.AppointmentStatus, addappointment.Comment, addappointment.GetDateToday(), addappointment.CreatedBy);
+            }
+            else
+            {
+                var appointmentDate = addappointment.GetAppointmentDateAndTime();
+                var interactionDate = addappointment.GetInteractionDateAndTime();
+                appointmentData = new Appointment(
+                    addappointment.AppointmentId, 
+                    addappointment.ClientId,
+                    addappointment.FacilityId,
+                    addappointment.ServiceTypeId,
+                    appointmentDate,
+                    interactionDate,
+                    addappointment.AppointmentStatus,
+                    addappointment.Comment,
+                    addappointment.GetDateToday(),
+                    addappointment.GetDateToday(),
+                    addappointment.CreatedBy,
+                    addappointment.CreatedBy
+                    );
+            }
+
+            
 
             string result = this._accountRepository.createappointment(appointmentData);
 
@@ -251,7 +277,9 @@ namespace DigitalEdge.Services
             else
             {
                 clientId = _accountRepository.GetClientByArtNumber(viralLoad.ArtNo).ClientId;
+
                 result = new ViralLoad(viralLoad.ViralLoadId, clientId, Int32.Parse(viralLoad.InitialViralLoadCount), Int32.Parse(viralLoad.CurrentViralLoadCount), DateTime.Parse(viralLoad.NextVLDueDate), viralLoad.DateCreated = DateTime.Now);
+
             }
             
 

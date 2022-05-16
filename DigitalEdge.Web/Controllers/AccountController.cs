@@ -104,6 +104,22 @@
                         if(model.AppointmentStatus == appointment.AppointmentStatus && model.ServiceTypeId == appointment.ServiceTypeId)
                         {
                             appointmentIsValid = false;
+                            return NotFound(new ServiceResponse()
+                            {
+                                Success = false,
+                                StatusCode = 409,
+                                Message = "Client appointment already exists!"
+                            });
+                        }
+                        if (model.ServiceTypeId == appointment.ServiceTypeId)
+                        {
+                            appointmentIsValid = false;
+                            return NotFound(new ServiceResponse()
+                            {
+                                Success = false,
+                                StatusCode = 409,
+                                Message = "Client appointment already exists!"
+                            });
                         }
                     }
                 }

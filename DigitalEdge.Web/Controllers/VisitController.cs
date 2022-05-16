@@ -395,7 +395,17 @@ namespace DigitalEdge.Web.Controllers
 
             return Ok(clientvl);
         }
-        
+
+        [HttpGet]
+        [Route("GetAllClientVlResults")]
+        [Authorize]
+        public ActionResult GetAllClientVlResults()
+        {
+            var clientVlResults = _visitService.getAllClientVLResults();
+
+            return Ok(clientVlResults);
+        }
+
         [HttpGet]
         [Route("ViewClientVLDetails/{id}")]
         [Authorize]
