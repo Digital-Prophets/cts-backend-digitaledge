@@ -89,6 +89,7 @@ namespace DigitalEdge.Repository
         IEnumerable<SearchModel> SearchAppointment(string searchTerm);
         ViralLoadModel GetClientVlResultDetails(long id);
         List<ViralLoadModel> GetClientVLList(long id);
+        List<ViralLoadModel> GetAllClientViralLoads();
     }
 
 }

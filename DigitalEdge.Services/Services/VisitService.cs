@@ -828,5 +828,14 @@ namespace DigitalEdge.Services
                 return null;
             return (clientVL);
         }
+
+        public List<ViralLoadModel> getAllClientVLResults()
+        {
+            List<ViralLoadModel> viralLoads = _visitRepository.GetAllClientViralLoads().ToList();
+            if (viralLoads == null)
+                return null;
+            return (viralLoads);
+        }
+
     }
 }
