@@ -277,11 +277,9 @@ namespace DigitalEdge.Services
             else
             {
                 clientId = _accountRepository.GetClientByArtNumber(viralLoad.ArtNo).ClientId;
-                
-                //if (!viralLoad.NextVLDueDate.IsEmpty())
-                //{
-                    result = new ViralLoad(viralLoad.ViralLoadId, clientId, Int32.Parse(viralLoad.InitialViralLoadCount), Int32.Parse(viralLoad.CurrentViralLoadCount), DateTime.Parse(viralLoad.NextVLDueDate), viralLoad.DateCreated = DateTime.Now);
-                //}
+
+                result = new ViralLoad(viralLoad.ViralLoadId, clientId, Int32.Parse(viralLoad.InitialViralLoadCount), Int32.Parse(viralLoad.CurrentViralLoadCount), DateTime.Parse(viralLoad.NextVLDueDate), viralLoad.DateCreated = DateTime.Now);
+
             }
             
 
