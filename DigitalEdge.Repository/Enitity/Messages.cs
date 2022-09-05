@@ -8,7 +8,7 @@ namespace DigitalEdge.Repository
     {
         [Key]
         public long MessagesId { get; set; }
-        public long ClientId { get; set; }
+        public long? ClientId { get; set; }
 
         [ForeignKey("ClientId")]
         public virtual Client Clients { get; set; }
